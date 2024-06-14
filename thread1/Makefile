@@ -1,5 +1,5 @@
 CC = gcc
-TARGET := t0
+TARGET := t1
 OUTPUT = $(TARGET).out
 CCFLAGS = -Og -Wextra -Werror -Wall
 LIBS = -pthread
