@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <pthread.h>
+#include <stdio.h>
 static volatile int counter = 0;
 // 반복문을 사용하여 단순히 1씩 더하기
 // 10,000,000을 변수 counter에 더하는 방법이 아니다.
@@ -8,8 +8,7 @@ void *myThread(void *arg);
 
 // 두 개의 쓰레드를 실행하고 (pthread_create)
 // 대기한다 (pthread_join)
-int main()
-{
+int main() {
   pthread_t p1, p2;
   printf("main : begin(counter = % d)\n", counter);
   pthread_create(&p1, NULL, myThread, "A");
@@ -21,13 +20,11 @@ int main()
   return 0;
 }
 
-void *myThread(void *arg)
-{
+void *myThread(void *arg) {
 
   printf("%s: begin\n", (char *)arg);
   int i;
-  for (i = 0; i < (int)1e7; i++)
-  {
+  for (i = 0; i < (int)1e7; i++) {
     counter = counter + 1;
   }
   printf("%s : done\n", (char *)arg);

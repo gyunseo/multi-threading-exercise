@@ -1,11 +1,10 @@
-#include <stdio.h>
 #include <assert.h>
 #include <pthread.h>
+#include <stdio.h>
 
 void *myThread(void *arg);
 
-int main()
-{
+int main() {
 
   pthread_t p1, p2;
   printf("main : begin\n");
@@ -18,8 +17,7 @@ int main()
   return 0;
 }
 
-void *myThread(void *arg)
-{
+void *myThread(void *arg) {
   printf("thread %s : begin\n", (char *)arg);
   printf("thread %s : end\n", (char *)arg);
   return NULL;
