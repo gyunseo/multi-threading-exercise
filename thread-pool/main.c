@@ -2,9 +2,12 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
 #define NUM_THREADS 4
-typedef struct task {
-  int a, b;
+typedef struct {
+  void (*taskFunction)(int, int);
+  int arg1, arg2;
 } Task;
 
 Task taskQueue[256];
@@ -12,9 +15,10 @@ pthread_mutex_t lockForQueue = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condForQueue = PTHREAD_COND_INITIALIZER;
 int taskCount = 0;
 
+void sum(int a, int b);
+void product(int a, int b);
 void enqueueTask(Task task);
 void executeTask(Task *task);
-
 void *startThread();
 
 int main() {
@@ -26,10 +30,9 @@ int main() {
   }
   srand(time(NULL));
   for (int i = 0; i < 100; i++) {
-    Task task = {
-        .a = rand() % 100,
-        .b = rand() % 100,
-    };
+    Task task = {.taskFunction = i % 2 == 0 ? &sum : &product,
+                 .arg1 = rand() % 100,
+                 .arg2 = rand() % 100};
     enqueueTask(task);
   }
 
@@ -42,16 +45,23 @@ int main() {
   pthread_cond_destroy(&condForQueue);
   return 0;
 }
+
+void sum(int a, int b) {
+  usleep(50000);
+  printf("Sum of %d and %d: %d\n", a, b, a + b);
+}
+void product(int a, int b) {
+  usleep(50000);
+  printf("Product of %d and %d: %d\n", a, b, a * b);
+}
+
 void enqueueTask(Task task) {
   pthread_mutex_lock(&lockForQueue);
   taskQueue[taskCount++] = task;
   pthread_mutex_unlock(&lockForQueue);
   pthread_cond_signal(&condForQueue);
 }
-void executeTask(Task *task) {
-  int res = task->a + task->b;
-  printf("the sum of %d and %d is %d\n", task->a, task->b, res);
-}
+void executeTask(Task *task) { task->taskFunction(task->arg1, task->arg2); }
 
 void *startThread() {
   while (true) {
